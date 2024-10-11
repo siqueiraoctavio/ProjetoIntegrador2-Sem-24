@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* Estilos para o corpo da página */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        /* Estilos para o cabeçalho */
+        header {
+            background-color: #1c1f7f;
+            color: #ffffff;
+            padding: 10px 0;
+            text-align: center;
+        }
+
+        /* Grupo de botões */
+        .btn-group {
+            margin-top: 10px;
+        }
+
+        /* Botões */
+        .btn {
+            background-color: #026bb5;
+            color: #ffffff;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin-right: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .btn:hover {
+            background-color: #555555;
+        }
+
+        /* Container principal */
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Formulário */
+        form {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        label, input[type=text], input[type=email], input[type=tel], input[type=submit], select {
+            display: block;
+            margin: 10px auto;
+            font-size: 16px;
+            color: #333;
+        }
+
+        input[type=text], input[type=email], input[type=tel], select {
+            padding: 10px;
+            width: 80%;
+            max-width: 400px;
+            border-radius: 5px;
+            border: 1px solid #cccccc;
+            background-color: #fafafa;
+            color: #333;
+        }
+
+        input[type=submit] {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #ffffff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        input[type=submit]:hover {
+            background-color: #0056b3;
+        }
+
+        /* Estilo para lista de resultados */
+        .result-list {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .result-list li {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+    </style>
+</head>
+<body>
+    <header>
+        <img src="{{ url_for('static', filename='logo.jpg') }}" alt="Logo" style="width: 100px; height: auto;">
+        <div class="btn-group">
+            <a href="/consulta" class="btn" accesskey="1">Consultar</a>
+            <a href="/cadastro" class="btn" accesskey="2">Cadastrar</a>
+            <a href="/" class="btn" accesskey="3">Home</a>
+        </div>
+    </header>
+
+    <div class="container">
+        <h1>Consulta de Clientes, Obras e Compras</h1>
+        <form action="/consulta" method="POST">
+            <label for="cnpj">Digite o CNPJ:</label>
+            <input type="text" id="cnpj" name="cnpj" placeholder="00.000.000/0000-00" oninput="this.value = aplicarMascaraCNPJ(this.value)" autofocus required><br>
+            <label for="os">Digite a OS da obra (opcional):</label>
+            <input type="text" id="os" name="os">
+            <input type="submit" value="Consultar">
+        </form>
+
+        <!-- Renderizando dados do cliente, obras e compras -->
+        <div>
+            <h2>Detalhes do Cliente</h2>
+            {% if cliente %}
+                <p><strong>CNPJ:</strong> {{ cliente.CNPJ }}</p>
+                <p><strong>Nome:</strong> {{ cliente.Primeiro_Nome }} {{ cliente.Segundo_Nome }}</p>
+                <p><strong>Email:</strong> {{ cliente.Email }}</p>
+                <p><strong>Telefone:</strong> {{ cliente.Telefone }}</p>
+                <p><strong>Endereço:</strong> {{ cliente.Rua }} , {{ cliente.Numero }} - {{ cliente.Bairro }} / {{ cliente.Cidade }} - {{ cliente.Estado }}</p>
+
+            {% else %}
+                <p>Cliente não encontrado.</p>
+            {% endif %}
+
+            <h2>Obras</h2>
+            {% if obras %}
+                <ul class="result-list">
+                    {% for obra in obras %}
+                <li>
+                <p><strong>OS:</strong> {{ obra.OS }}</p>
+                <p><strong>Nome do Contato:</strong> {{ obra.Primeiro_Nome_Contato }} {{ obra.Segundo_Nome_Contato }}</p>
+                <p><strong>Valor:</strong> R$ {{ '{:,.2f}'.format(obra.Valor).replace(',', 'X').replace('.', ',').replace('X', '.') }}</p>
+                <p><strong>Endereço:</strong> {{ obra.Rua_Obra }} ,  {{ obra.Numero_Obra }} - {{ obra.Bairro_Obra }} / {{ obra.Cidade_Obra }} - {{ obra.Estado_Obra }}</p>
+
+            </li>
+            <hr>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>Não há obras cadastradas para este cliente.</p>
+{% endif %}
+
+            <h2>Compras Relacionadas à Obra</h2>
+{% if compras %}
+
+    {% for os, lista_compras in compras.items() %}
+        <h3>OS: {{ os }}</h3>
+        <ul class="result-list">
+            {% for compra in lista_compras %}
+                <li>
+                    <strong>Ordem de Compras:</strong> {{ compra.Ordem_de_Compras }}<br>
+                    <strong>Matéria Prima:</strong> {{ compra.Materia_prima }}<br>
+                    <strong>Consumíveis:</strong> {{ compra.Consumiveis }}<br>
+                    <strong>Miscelânea:</strong> {{ compra.Miscelanea }}<br>
+                </li>
+                <hr>
+            {% endfor %}
+        </ul>
+    {% endfor %}
+{% else %}
+    <p>Não há compras cadastradas para esta obra.</p>
+{% endif %}
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+    function aplicarMascaraCNPJ(cnpj) {
+        // Remove tudo que não for dígito
+        cnpj = cnpj.replace(/\D/g, "");
+
+        // Adiciona a máscara
+        if (cnpj.length <= 2) {
+            return cnpj; // Retorna apenas os 2 primeiros dígitos
+        } else if (cnpj.length <= 5) {
+            return cnpj.replace(/^(\d{2})(\d)/, "$1.$2"); // Adiciona o primeiro ponto
+        } else if (cnpj.length <= 8) {
+            return cnpj.replace(/^(\d{2})(\d{3})(\d)/, "$1.$2.$3"); // Adiciona o segundo ponto
+        } else if (cnpj.length <= 12) {
+            return cnpj.replace(/^(\d{2})(\d{3})(\d{3})(\d)/, "$1.$2.$3/$4"); // Adiciona a barra
+        } else {
+            return cnpj.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d)/, "$1.$2.$3/$4-$5"); // Adiciona o hífen
+        }
+    }
+
+    // Função para abrir o pop-up
+    function openPopup() {
+        document.getElementById('shortcut-popup').style.display = 'block';
+        document.getElementById('overlay').style.display = 'block';
+    }
+
+    // Função para fechar o pop-up
+    function closePopup() {
+        document.getElementById('shortcut-popup').style.display = 'none';
+        document.getElementById('overlay').style.display = 'none';
+    }
+
+    // Abrir o pop-up ao carregar a página
+    window.onload = openPopup;
+
+    // Adicionando atalhos de teclado
+    document.addEventListener('keydown', function(event) {
+        if (event.altKey) {
+            switch (event.key) {
+                case '1':
+                    event.preventDefault();
+                    document.querySelector('a[href="/consulta"]').click();
+                    break;
+                case '2':
+                    event.preventDefault();
+                    document.querySelector('a[href="/cadastro"]').click();
+                    break;
+                case '3':
+                    event.preventDefault();
+                    document.querySelector('a[href="/"]').click();
+                    break;
+            }
+        }
+    });
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+

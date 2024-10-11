@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal de Acesso</title>
+    <style>
+        /* Estilos CSS para personalização */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #ffffff; /* Fundo branco para um melhor contraste */
+            color: #333; /* Cor de texto padrão */
+        }
+        header {
+            background-color: #1c1f7f; /* Aumentando o contraste do fundo */
+            color: #ffffff;
+            padding: 10px 0; /* Corrigido o espaço */
+            text-align: center;
+        }
+        .btn-group {
+            margin-top: 10px;
+        }
+        .btn {
+            background-color: #026bb5; /* Cor mais escura para melhorar contraste */
+            color: #ffffff;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin-right: 10px;
+            cursor: pointer;
+            border-radius: 5px; /* Borda arredondada para melhorar a usabilidade */
+        }
+        .btn:hover {
+            background-color: #555555; /* Cor de hover com melhor contraste */
+        }
+        /* Estilos para o pop-up */
+        #shortcut-popup {
+            display: none; /* Ocultar o pop-up por padrão */
+            position: fixed;
+            top: 100px; /* Ajusta a distância do topo */
+            left: 20px; /* Coloca o pop-up à esquerda */
+            width: 200px; /* Largura reduzida do pop-up */
+            background-color: #ffffff;
+            border: 2px solid #1c1f7f;
+            padding: 10px; /* Padding ajustado */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            z-index: 1000; /* Certifique-se de que fique acima de outros conteúdos */
+        }
+        #overlay {
+            display: none; /* Ocultar o overlay por padrão */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5); /* Fundo semi-transparente */
+            z-index: 500; /* Certifique-se de que fique acima de outros conteúdos */
+        }
+        .close-btn {
+            background: #1c1f7f;
+            color: #ffffff;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            margin-top: 10px;
+            display: block; /* Para que o botão fique em uma nova linha */
+            width: 100%; /* Botão ocupa toda a largura */
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="{{ url_for('static', filename='logo.jpg') }}" alt="Logo" style="width: 555px; height: auto;">
+        <div class="btn-group">
+            <a href="/consulta" class="btn" accesskey="1">Consultar</a>
+            <a href="/cadastro" class="btn" accesskey="2">Cadastrar</a>
+            <a href="/" class="btn" accesskey="3">Home</a>
+        </div>
+    </header>
+
+    <div id="overlay"></div>
+    <div id="shortcut-popup">
+        <h2>Atalhos de Teclado</h2>
+        <p>Pressione as seguintes combinações de teclas:</p>
+        <ul>
+            <li><strong>Alt + 1</strong> - Consultar</li>
+            <li><strong>Alt + 2</strong> - Cadastrar</li>
+            <li><strong>Alt + 3</strong> - Home</li>
+        </ul>
+        <button class="close-btn" onclick="closePopup()">Fechar</button>
+    </div>
+
+    <script>
+        // Função para abrir o pop-up
+        function openPopup() {
+            document.getElementById('shortcut-popup').style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
+        }
+
+        // Função para fechar o pop-up
+        function closePopup() {
+            document.getElementById('shortcut-popup').style.display = 'none';
+            document.getElementById('overlay').style.display = 'none';
+        }
+
+        // Abrir o pop-up ao carregar a página
+        window.onload = openPopup;
+
+        // Adicionando atalhos de teclado
+        document.addEventListener('keydown', function(event) {
+            if (event.altKey) {
+                switch (event.key) {
+                    case '1':
+                        event.preventDefault();
+                        document.querySelector('a[href="/consulta"]').click();
+                        break;
+                    case '2':
+                        event.preventDefault();
+                        document.querySelector('a[href="/cadastro"]').click();
+                        break;
+                    case '3':
+                        event.preventDefault();
+                        document.querySelector('a[href="/"]').click();
+                        break;
+                }
+            }
+        });
+    </script>
+</body>
+</html>
+
